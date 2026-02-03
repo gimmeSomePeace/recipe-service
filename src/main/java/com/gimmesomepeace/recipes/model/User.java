@@ -7,24 +7,34 @@ import java.util.ArrayList;
 import java.util.List;
 
 
+/**
+ * Сущность пользователя.
+ *
+ * Содержит информацию о пользователе: имя, логин для авторизации и хеш пароля.
+ * Также содержит список рецептов, созданных пользователем.
+ */
 @Entity
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
 
-    @NotBlank
+    /** Имя пользователя, отображаемое в UI */
     @Column(nullable = false)
+    @NotBlank
     private String name;
 
-    @NotBlank
+    /** Логин пользователя, используется для авторизации. */
     @Column(unique = true, nullable = false)
+    @NotBlank
     private String login;
 
-    @NotBlank
+    /** Хеш пароля пользователя. */
     @Column(nullable = false)
+    @NotBlank
     private String passwordHash;
 
+    /** Все рецепты, созданные пользователем */
     @OneToMany(mappedBy = "user")
     List<Recipe> recipes = new ArrayList<>();
 }
