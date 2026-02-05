@@ -13,6 +13,7 @@ import jakarta.validation.constraints.NotNull;
  * Содержит дополнительные данные, такие как описание, инструкции, оценка и заметки.
  */
 @Entity
+@Table(name = "recipes")
 public class Recipe {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)

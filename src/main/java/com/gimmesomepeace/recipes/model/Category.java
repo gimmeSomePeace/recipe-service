@@ -14,6 +14,7 @@ import java.util.List;
  * Также содержит список рецептов, относящихся к рассматриваемой категории.
  */
 @Entity
+@Table(name = "categories")
 public class Category {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
@@ -27,4 +28,18 @@ public class Category {
     /** Список рецептов, относящихся к данной категории */
     @OneToMany(mappedBy = "category")
     private List<Recipe> recipes = new ArrayList<>();
+
+    // ----- Конструкторы -----
+    public Category(String title) {
+        this.title = title;
+    }
+
+    // ----- геттеры -----
+    public Long getId() {
+        return id;
+    }
+
+    public String getTitle() {
+        return title;
+    }
 }
