@@ -30,6 +30,9 @@ public class Category {
     private List<Recipe> recipes = new ArrayList<>();
 
     // ----- Конструкторы -----
+    @SuppressWarnings("unused")
+    protected Category() {}
+
     public Category(String title) {
         this.title = title;
     }

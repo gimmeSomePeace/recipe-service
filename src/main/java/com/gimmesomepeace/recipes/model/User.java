@@ -38,4 +38,8 @@ public class User {
     /** Все рецепты, созданные пользователем */
     @OneToMany(mappedBy = "user")
     List<Recipe> recipes = new ArrayList<>();
+
+    // ----- Конструкторы -----
+    @SuppressWarnings("unused")
+    protected User() {}
 }

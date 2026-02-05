@@ -50,4 +50,8 @@ public class Recipe {
     /** Заметки, оставленные владельцем рецепта */
     @Lob
     private String notes;
+
+    // ----- Конструкторы -----
+    @SuppressWarnings("unused")
+    protected Recipe() {}
 }
