@@ -1,15 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="EntryPointsManager">
-    <list size="8">
+    <list size="9">
       <item index="0" class="java.lang.String" itemvalue="jakarta.persistence.Entity" />
       <item index="1" class="java.lang.String" itemvalue="org.springframework.stereotype.Component" />
       <item index="2" class="java.lang.String" itemvalue="org.springframework.stereotype.Controller" />
       <item index="3" class="java.lang.String" itemvalue="org.springframework.stereotype.Repository" />
       <item index="4" class="java.lang.String" itemvalue="org.springframework.stereotype.Service" />
-      <item index="5" class="java.lang.String" itemvalue="org.springframework.web.bind.annotation.ExceptionHandler" />
-      <item index="6" class="java.lang.String" itemvalue="org.springframework.web.bind.annotation.GetMapping" />
-      <item index="7" class="java.lang.String" itemvalue="org.springframework.web.bind.annotation.RestController" />
+      <item index="5" class="java.lang.String" itemvalue="org.springframework.test.context.DynamicPropertySource" />
+      <item index="6" class="java.lang.String" itemvalue="org.springframework.web.bind.annotation.ExceptionHandler" />
+      <item index="7" class="java.lang.String" itemvalue="org.springframework.web.bind.annotation.GetMapping" />
+      <item index="8" class="java.lang.String" itemvalue="org.springframework.web.bind.annotation.RestController" />
     </list>
   </component>
   <component name="ExternalStorageConfigurationManager" enabled="true" />
