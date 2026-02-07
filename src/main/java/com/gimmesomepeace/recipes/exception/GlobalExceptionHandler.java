@@ -13,6 +13,14 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(EntityNotFoundException.class)
     public ResponseEntity<ErrorResponse> handleNotFound(EntityNotFoundException ex) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorResponse(ex.getMessage()));
+        //TODO: убрать заглушки и сделать адекватную обработку
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorResponse(
+                "some type",
+                "some title",
+                404,
+                ex.getMessage(),
+                "/fufff/",
+                "now"
+        ));
     }
 }
