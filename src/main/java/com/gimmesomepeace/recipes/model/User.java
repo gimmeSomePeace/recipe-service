@@ -39,7 +39,47 @@ public class User {
     @OneToMany(mappedBy = "user")
     List<Recipe> recipes = new ArrayList<>();
 
+    private Role role;
+
     // ----- Конструкторы -----
     @SuppressWarnings("unused")
     protected User() {}
+
+    public User(String name, String login, String passwordHash) {
+        this.name = name;
+        this.login = login;
+        this.passwordHash = passwordHash;
+    }
+
+    // ----- Геттеры -----
+
+    public Long getId() {
+        return id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getLogin() {
+        return login;
+    }
+
+    public String getPasswordHash() {
+        return passwordHash;
+    }
+
+    public Role getRole() {
+        return role;
+    }
+
+    // ----- Сеттеры -----
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setLogin(String login) {
+        this.login = login;
+    }
 }

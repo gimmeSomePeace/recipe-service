@@ -2,12 +2,11 @@ package com.gimmesomepeace.recipes.service;
 
 
 import com.gimmesomepeace.recipes.dto.CategoryDto;
+import com.gimmesomepeace.recipes.exception.ResourceNotFoundException;
+import com.gimmesomepeace.recipes.exception.ResourceType;
 import com.gimmesomepeace.recipes.mapper.CategoryMapper;
 import com.gimmesomepeace.recipes.repository.CategoryRepository;
-import jakarta.persistence.EntityNotFoundException;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
@@ -31,7 +30,7 @@ public class CategoryService {
         return repository.findById(id)
                 .map(CategoryMapper::toDto)
                 .orElseThrow(() ->
-                        new EntityNotFoundException("Категория с идентификатором " + id + " не найдена")
+                        new ResourceNotFoundException(ResourceType.CATEGORY, id)
                 );
     }
 }
