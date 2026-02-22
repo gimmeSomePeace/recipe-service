@@ -8,3 +8,5 @@ spring:
   h2:
     console:
       enabled: true
+jwt:
+  secret: dGhpc0lzQVRlc3RTZWNyZXRLZXlGb3JKV1RUb2tlbg==

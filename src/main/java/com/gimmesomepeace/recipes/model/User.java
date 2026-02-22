@@ -45,10 +45,11 @@ public class User {
     @SuppressWarnings("unused")
     protected User() {}
 
-    public User(String name, String login, String passwordHash) {
+    public User(String name, String login, String passwordHash, Role role) {
         this.name = name;
         this.login = login;
         this.passwordHash = passwordHash;
+        this.role = role;
     }
 
     // ----- Геттеры -----

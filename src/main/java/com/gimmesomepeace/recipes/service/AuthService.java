@@ -7,6 +7,7 @@ import com.gimmesomepeace.recipes.dto.response.UserResponse;
 import com.gimmesomepeace.recipes.exception.AuthError;
 import com.gimmesomepeace.recipes.exception.LoginAlreadyExistsException;
 import com.gimmesomepeace.recipes.exception.LoginFailedException;
+import com.gimmesomepeace.recipes.model.Role;
 import com.gimmesomepeace.recipes.model.User;
 import com.gimmesomepeace.recipes.repository.UserRepository;
 import com.gimmesomepeace.recipes.security.JwtUtil;
@@ -34,7 +35,8 @@ public class AuthService {
         User user = new User(
                 request.name(),
                 request.login(),
-                encoder.encode(request.password())
+                encoder.encode(request.password()),
+                Role.USER
         );
         userRepository.save(user);
         return UserResponse.from(user);
