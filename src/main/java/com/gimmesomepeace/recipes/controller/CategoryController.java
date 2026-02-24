@@ -24,7 +24,7 @@ import java.util.List;
 
 @Tag(name = "Категории", description = "Операции, связанные с категориями")
 @RestController
-@RequestMapping("/categories")
+@RequestMapping(value = "/categories", produces =  MediaType.APPLICATION_JSON_VALUE)
 public class CategoryController {
     CategoryService service;
 
@@ -36,9 +36,15 @@ public class CategoryController {
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Категории получены",
                 content = @Content(
-                        array = @ArraySchema(schema = @Schema(implementation = CategoryDto.class)),
-                        mediaType = MediaType.APPLICATION_JSON_VALUE
+                        array = @ArraySchema(schema = @Schema(implementation = CategoryDto.class))
                 )
+            ),
+            @ApiResponse(
+                    responseCode = "403",
+                    description = "Требуется аутентификация",
+                    content = @Content(
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    )
             )
     })
     @GetMapping
@@ -55,8 +61,7 @@ public class CategoryController {
                     responseCode = "200",
                     description = "Категория найдена",
                     content = @Content(
-                            schema = @Schema(implementation = CategoryDto.class),
-                            mediaType = MediaType.APPLICATION_JSON_VALUE
+                            schema = @Schema(implementation = CategoryDto.class)
                     )
             ),
             @ApiResponse(
@@ -64,7 +69,6 @@ public class CategoryController {
                     description = "Категория не найдена",
                     content = @Content(
                         schema = @Schema(implementation = ErrorResponse.class),
-                        mediaType = MediaType.APPLICATION_JSON_VALUE,
                             examples = @ExampleObject(
                                     name = "Ошибка 404",
                                     value = """
@@ -74,6 +78,14 @@ public class CategoryController {
                                            }
                                            """
                             )
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "403",
+                    description = "Требуется аутентификация",
+                    content = @Content(
+                            schema = @Schema(implementation = ErrorResponse.class),
+                            mediaType = MediaType.APPLICATION_JSON_VALUE
                     )
             )
     })

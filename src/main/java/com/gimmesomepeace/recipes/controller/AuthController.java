@@ -12,8 +12,6 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -25,11 +23,13 @@ import org.springframework.web.bind.annotation.RestController;
 
 @Tag(name = "Авторизация", description = "Операции, связанные с авторизацией пользователя")
 @RestController
-@RequestMapping("/auth")
+@RequestMapping(value = "/auth", produces =  MediaType.APPLICATION_JSON_VALUE)
 public class AuthController {
+    private final AuthService service;
 
-    @Autowired
-    private AuthService service;
+    public AuthController(AuthService service) {
+        this.service = service;
+    }
 
     @Operation(summary = "Регистрация", description = "Регистрирует пользователя")
     @ApiResponses(value = {
@@ -37,16 +37,14 @@ public class AuthController {
                     responseCode = "201",
                     description = "Регистрация прошла успешно",
                     content = @Content(
-                            schema = @Schema(implementation = UserResponse.class),
-                            mediaType = MediaType.APPLICATION_JSON_VALUE
+                            schema = @Schema(implementation = UserResponse.class)
                     )
             ),
             @ApiResponse(
                     responseCode = "409",
                     description = "Логин уже занят",
                     content = @Content(
-                            schema = @Schema(implementation = ErrorResponse.class),
-                            mediaType = MediaType.APPLICATION_JSON_VALUE
+                            schema = @Schema(implementation = ErrorResponse.class)
                     )
             )
     })
@@ -64,16 +62,14 @@ public class AuthController {
                     responseCode = "200",
                     description = "Авторизация прошла успешно",
                     content = @Content(
-                            schema = @Schema(implementation = LoginResponse.class),
-                            mediaType = MediaType.APPLICATION_JSON_VALUE
+                            schema = @Schema(implementation = LoginResponse.class)
                     )
             ),
             @ApiResponse(
                     responseCode = "401",
                     description = "Неправильный логин или пароль",
                     content = @Content(
-                            schema = @Schema(implementation = ErrorResponse.class),
-                            mediaType = MediaType.APPLICATION_JSON_VALUE
+                            schema = @Schema(implementation = ErrorResponse.class)
                     )
             )
     })
