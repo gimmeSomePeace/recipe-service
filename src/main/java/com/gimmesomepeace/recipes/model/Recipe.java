@@ -54,4 +54,33 @@ public class Recipe {
     // ----- Конструкторы -----
     @SuppressWarnings("unused")
     protected Recipe() {}
+
+    // ----- Геттеры ------
+    public Long getId() {
+        return id;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public String getInstructions() {
+        return instructions;
+    }
+
+    public Category getCategory() {
+        return category;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public Integer getRating() {
+        return rating;
+    }
+
+    public String getNotes() {
+        return notes;
+    }
 }
