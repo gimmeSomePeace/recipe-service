@@ -1,0 +1,12 @@
+spring:
+  datasource:
+    url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1
+    driver-class-name: org.h2.Driver
+    username: test-user
+    password: test-user
+
+  h2:
+    console:
+      enabled: true
+jwt:
+  secret: dGhpc0lzQVRlc3RTZWNyZXRLZXlGb3JKV1RUb2tlbg==
