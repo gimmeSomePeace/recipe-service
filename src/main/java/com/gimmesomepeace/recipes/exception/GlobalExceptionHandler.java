@@ -82,4 +82,39 @@ public class GlobalExceptionHandler {
         );
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
     }
+
+    @ExceptionHandler(ForbiddenException.class)
+    public ResponseEntity<ErrorResponse> handleForbidden(
+            ForbiddenException exc,
+            HttpServletRequest request
+    ) {
+        String detail = exc.getMessage();
+        ErrorResponse response = new ErrorResponse(
+                "FORBIDDEN",
+                "Отказано в доступе",
+                403,
+                detail,
+                request.getRequestURI(),
+                Instant.now().toString()
+        );
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
+    }
+
+    @ExceptionHandler(RecipeValidationException.class)
+    public ResponseEntity<ErrorResponse> handleRecipeValidation(
+            RecipeValidationException exc,
+            HttpServletRequest request
+    ) {
+        String detail = exc.getMessage();
+
+        ErrorResponse response = new ErrorResponse(
+                "VALIDATION_ERROR",
+                "Ошибка валидации",
+                400,
+                detail,
+                request.getRequestURI(),
+                Instant.now().toString()
+        );
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+    }
 }

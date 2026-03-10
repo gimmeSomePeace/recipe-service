@@ -156,7 +156,7 @@ public class UserController {
             )
     })
     @GetMapping("/me/recipes")
-    Page<RecipeShortResponse> getRecipes(
+    Page<RecipeShortResponse> getUserRecipes(
             @AuthenticationPrincipal UserPrincipal principal,
             @PageableDefault(size = 10, sort = "title", direction = Sort.Direction.ASC) Pageable pageable
     ) {
@@ -181,12 +181,12 @@ public class UserController {
             )
     })
     @GetMapping("/{id}/recipes")
-    Page<RecipeShortResponse> getRecipes(
-            @PathVariable long userId,
+    Page<RecipeShortResponse> getRecipesByUserId(
+            @PathVariable long id,
             @PageableDefault(size = 10, sort = "title", direction = Sort.Direction.ASC) Pageable pageable
     ) {
         return recipeService.getRecipesByUserId(
-                userId,
+                id,
                 pageable
         );
     }

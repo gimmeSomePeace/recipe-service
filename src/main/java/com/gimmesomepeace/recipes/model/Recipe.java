@@ -53,7 +53,16 @@ public class Recipe {
 
     // ----- Конструкторы -----
     @SuppressWarnings("unused")
-    protected Recipe() {}
+    public Recipe() {}
+
+    public Recipe(String title, String instructions, Category category, User user, Integer rating, String notes) {
+        this.title = title;
+        this.instructions = instructions;
+        this.category = category;
+        this.user = user;
+        this.rating = rating;
+        this.notes = notes;
+    }
 
     // ----- Геттеры ------
     public Long getId() {
@@ -82,5 +91,31 @@ public class Recipe {
 
     public String getNotes() {
         return notes;
+    }
+
+    // ------ Сеттеры ------
+    public void setTitle(String title) {
+        if (title == null || title.isBlank())
+            throw new IllegalArgumentException("Title cannot be null or blank");
+        this.title = title;
+    }
+
+    public void setInstructions(String instructions) {
+        if (instructions == null || instructions.isBlank())
+            throw new IllegalArgumentException("instructions cannot be null or blank");
+        this.instructions = instructions;
+    }
+
+    public void setCategory(Category category) {
+        if (category == null) throw new IllegalArgumentException("category cannot be null");
+        this.category = category;
+    }
+
+    public void setRating(Integer rating) {
+        this.rating = rating;
+    }
+
+    public void setNotes(String notes) {
+        this.notes = notes;
     }
 }
