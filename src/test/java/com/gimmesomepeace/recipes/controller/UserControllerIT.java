@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gimmesomepeace.recipes.dto.request.UpdateUserRequest;
 import com.gimmesomepeace.recipes.model.Role;
 import com.gimmesomepeace.recipes.model.User;
+import com.gimmesomepeace.recipes.repository.RecipeRepository;
 import com.gimmesomepeace.recipes.repository.UserRepository;
 import com.gimmesomepeace.recipes.security.JwtUtil;
 import org.junit.jupiter.api.BeforeEach;
@@ -32,6 +33,8 @@ public class UserControllerIT {
     @Autowired
     UserRepository userRepository;
     @Autowired
+    RecipeRepository recipeRepository;
+    @Autowired
     PasswordEncoder passwordEncoder;
     @Autowired
     JwtUtil jwtUtil;
@@ -43,6 +46,7 @@ public class UserControllerIT {
 
     @BeforeEach
     void setUp() {
+        recipeRepository.deleteAll();
         userRepository.deleteAll();
         testUser = new User("name", "login", passwordEncoder.encode("test-password"), Role.USER);
         testUser = userRepository.save(testUser);
