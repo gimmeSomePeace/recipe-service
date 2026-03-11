@@ -3,6 +3,12 @@ package com.gimmesomepeace.recipes.model;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;
+import org.hibernate.annotations.Filter;
+import org.hibernate.annotations.FilterDef;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
+
+import java.time.LocalDateTime;
 
 
 /**
@@ -13,11 +19,16 @@ import lombok.*;
  */
 @Entity
 @Table(name = "app_user")
-@Getter
-@Setter
+@SQLDelete(sql = "UPDATE app_user set deleted_at = NOW() WHERE id = ?")
+@SQLRestriction("deleted_at IS NULL")
+//@FilterDef(name = "activeFilter", defaultCondition = "deleted_at IS NULL")
+//@Filter(name = "activeFilter")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Builder
+@Getter
+// Сеттеры в данном случае полезны только для PATCH
+@Setter
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "users_seq")
@@ -44,4 +55,7 @@ public class User {
     @Column(nullable = false)
     @Builder.Default
     private Role role = Role.USER;
+
+    @Column(name = "deleted_at")
+    private LocalDateTime deletedAt;
 }

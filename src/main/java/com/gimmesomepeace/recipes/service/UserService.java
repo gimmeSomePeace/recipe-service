@@ -26,6 +26,8 @@ public class UserService {
     public UserResponse updateUser(Long id, UpdateUserRequest request) {
         User user = userRepository.findById(id).orElseThrow(() -> new UserNotFoundException(id));
 
+        System.out.println("REQUEST: " + request.toString());
+        System.out.println("LOGIN: " + user.getLogin());
         if (request.login() != null && !request.login().isBlank() && !user.getLogin().equals(request.login())) {
             if (userRepository.existsByLogin(request.login())) {
                 throw new LoginAlreadyExistsException(request.login());

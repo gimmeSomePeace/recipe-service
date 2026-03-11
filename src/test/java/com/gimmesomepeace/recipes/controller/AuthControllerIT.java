@@ -3,9 +3,9 @@ package com.gimmesomepeace.recipes.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gimmesomepeace.recipes.dto.request.LoginRequest;
 import com.gimmesomepeace.recipes.dto.request.RegistrationRequest;
-import com.gimmesomepeace.recipes.model.Role;
 import com.gimmesomepeace.recipes.model.User;
 import com.gimmesomepeace.recipes.repository.UserRepository;
+import com.gimmesomepeace.recipes.testutil.TestDatabaseCleaner;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,14 +29,17 @@ class AuthControllerIT {
     @Autowired
     private MockMvc mockMvc;
     @Autowired
-    UserRepository userRepository;
+    private UserRepository userRepository;
     @Autowired
-    ObjectMapper objectMapper;
+    private ObjectMapper objectMapper;
     @Autowired
     private PasswordEncoder encoder;
+    @Autowired
+    private TestDatabaseCleaner cleaner;
 
     @BeforeEach
     void setUp() {
+        cleaner.clean();
         userRepository.deleteAll();
     }
 
@@ -72,7 +75,11 @@ class AuthControllerIT {
 
     @Test
     void registration_shouldFailWhenLoginBusy() throws Exception {
-        User testUser = new User("name", "login", "test password", Role.USER);
+        User testUser = User.builder()
+                            .name("name")
+                            .login("login")
+                            .passwordHash("test passsword")
+                            .build();
         userRepository.save(testUser);
 
         RegistrationRequest registrationRequest = new RegistrationRequest(
@@ -91,7 +98,11 @@ class AuthControllerIT {
     @Test
     void login_shouldLogin() throws Exception {
 
-        User testUser = new User("name", "login", encoder.encode("test password"), Role.USER);
+        User testUser = User.builder()
+                            .name("name")
+                            .login("login")
+                            .passwordHash(encoder.encode("test password"))
+                            .build();
         userRepository.save(testUser);
 
         LoginRequest loginRequest = new LoginRequest("login", "test password");
@@ -106,8 +117,12 @@ class AuthControllerIT {
 
     @Test
     void login_shouldFailWhenWrongPassword() throws Exception {
-        User testUser = new User("name", "login", "test password", Role.USER);
-        userRepository.save(testUser);
+        User testUser = User.builder()
+                            .name("name")
+                            .login("login")
+                            .passwordHash(encoder.encode("test password"))
+                            .build();
+        testUser = userRepository.save(testUser);
         LoginRequest loginRequest = new LoginRequest("wrong", "test password");
         String json = objectMapper.writeValueAsString(loginRequest);
 

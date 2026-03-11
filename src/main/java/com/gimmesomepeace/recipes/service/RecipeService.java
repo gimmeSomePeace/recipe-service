@@ -84,14 +84,14 @@ public class RecipeService {
         Category category = categoryRepository.findById(request.categoryId()).orElseThrow(() -> new ResourceNotFoundException(ResourceType.CATEGORY, request.categoryId()));
         User user = userRepository.findById(userId).orElseThrow(() -> new ResourceNotFoundException(ResourceType.USER, userId));
 
-        Recipe recipe = new Recipe(
-                request.title(),
-                request.instructions(),
-                category,
-                user,
-                request.rating(),
-                request.notes()
-        );
+        Recipe recipe = Recipe.builder()
+                .title(request.title())
+                .instructions(request.instructions())
+                .category(category)
+                .user(user)
+                .rating(request.rating())
+                .notes(request.notes())
+                .build();
         recipeRepository.save(recipe);
         return RecipeResponse.from(recipe);
     }

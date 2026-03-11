@@ -4,6 +4,7 @@ import com.gimmesomepeace.recipes.dto.request.LoginRequest;
 import com.gimmesomepeace.recipes.dto.request.RegistrationRequest;
 import com.gimmesomepeace.recipes.dto.response.LoginResponse;
 import com.gimmesomepeace.recipes.dto.response.UserResponse;
+import com.gimmesomepeace.recipes.dto.response.UserShortResponse;
 import com.gimmesomepeace.recipes.exception.AuthError;
 import com.gimmesomepeace.recipes.exception.LoginAlreadyExistsException;
 import com.gimmesomepeace.recipes.exception.LoginFailedException;
@@ -33,12 +34,12 @@ public class AuthService {
         if (userRepository.existsByLogin(request.login())) {
             throw new LoginAlreadyExistsException(request.login());
         }
-        User user = new User(
-                request.name(),
-                request.login(),
-                encoder.encode(request.password()),
-                Role.USER
-        );
+        User user = User.builder()
+                .name(request.name())
+                .login(request.login())
+                .passwordHash(encoder.encode(request.password()))
+                .build();
+
         user = userRepository.save(user);
         return UserResponse.from(user);
     }
@@ -52,6 +53,7 @@ public class AuthService {
         }
 
         String token = jwtUtil.generateToken(user);
-        return new LoginResponse(token);
+        // TODO: Сделать норм вывод
+        return new LoginResponse(token, "Bearer", 50, UserShortResponse.from(user));
     }
 }

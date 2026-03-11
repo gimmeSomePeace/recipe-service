@@ -2,11 +2,11 @@ package com.gimmesomepeace.recipes.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gimmesomepeace.recipes.dto.request.UpdateUserRequest;
-import com.gimmesomepeace.recipes.model.Role;
 import com.gimmesomepeace.recipes.model.User;
 import com.gimmesomepeace.recipes.repository.RecipeRepository;
 import com.gimmesomepeace.recipes.repository.UserRepository;
 import com.gimmesomepeace.recipes.security.JwtUtil;
+import com.gimmesomepeace.recipes.testutil.TestDatabaseCleaner;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,8 +17,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
+import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -40,15 +40,24 @@ public class UserControllerIT {
     JwtUtil jwtUtil;
     @Autowired
     ObjectMapper objectMapper;
+    @Autowired
+    TestDatabaseCleaner cleaner;
 
     User testUser;
     String token;
 
     @BeforeEach
     void setUp() {
+        cleaner.clean();
+
         recipeRepository.deleteAll();
         userRepository.deleteAll();
-        testUser = new User("name", "login", passwordEncoder.encode("test-password"), Role.USER);
+
+        testUser = User.builder()
+                .name("name")
+                .login("login")
+                .passwordHash(passwordEncoder.encode("test-password"))
+                .build();
         testUser = userRepository.save(testUser);
 
         token = jwtUtil.generateToken(testUser);
@@ -72,16 +81,21 @@ public class UserControllerIT {
     @Test
     void updateUserInfo_shouldUpdateUserData() throws Exception {
         UpdateUserRequest updateUserRequest = new UpdateUserRequest("new-login", "new-name");
-        String json =  objectMapper.writeValueAsString(updateUserRequest);
+        String content =  objectMapper.writeValueAsString(updateUserRequest);
+
         mockMvc.perform(patch("/users/me")
                     .header("Authorization", "Bearer " + token)
                     .contentType(MediaType.APPLICATION_JSON)
-                    .content(json)
+                    .content(content)
                 )
-                .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.name").value("new-name"))
                 .andExpect(jsonPath("$.login").value("new-login"));
+
+        User updatedUser = userRepository.findById(testUser.getId()).orElse(null);
+        assertNotNull(updatedUser);
+        assertEquals(updatedUser.getName(), testUser.getName());
+        assertEquals(updatedUser.getLogin(), testUser.getLogin());
     }
 
     @Test
@@ -92,10 +106,15 @@ public class UserControllerIT {
 
     @Test
     void updateUserInfo_shouldFailWhenLoginIsBusy() throws Exception {
-        User newUser = new User("new-user", "new-user", "passsword-hash", Role.USER);
+
+        User newUser = User.builder()
+                        .name("new-name")
+                        .login("new-login")
+                        .passwordHash(passwordEncoder.encode("new-password"))
+                        .build();
         userRepository.save(newUser);
 
-        UpdateUserRequest updateUserRequest = new UpdateUserRequest("new-user", null);
+        UpdateUserRequest updateUserRequest = new UpdateUserRequest("new-login", null);
         String json =  objectMapper.writeValueAsString(updateUserRequest);
         mockMvc.perform(patch("/users/me")
                     .header("Authorization", "Bearer " + token)
@@ -109,6 +128,8 @@ public class UserControllerIT {
         mockMvc.perform(delete("/users/me")
                         .header("Authorization", "Bearer " + token))
                 .andExpect(status().isNoContent());
+        User deletedUser = userRepository.findById(testUser.getId()).orElse(null);
+        assertNull(deletedUser);
     }
 
     @Test

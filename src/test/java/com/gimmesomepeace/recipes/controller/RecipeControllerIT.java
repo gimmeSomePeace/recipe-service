@@ -11,6 +11,9 @@ import com.gimmesomepeace.recipes.repository.CategoryRepository;
 import com.gimmesomepeace.recipes.repository.RecipeRepository;
 import com.gimmesomepeace.recipes.repository.UserRepository;
 import com.gimmesomepeace.recipes.security.JwtUtil;
+import com.gimmesomepeace.recipes.testutil.TestDatabaseCleaner;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,28 +46,47 @@ public class RecipeControllerIT {
     JwtUtil jwtUtil;
     @Autowired
     ObjectMapper objectMapper;
-
+    @Autowired
+    TestDatabaseCleaner cleaner;
+    @Autowired
+    EntityManager em;
 
     User testUser;
     Category testCategory;
 
     @BeforeEach
     void setUp() {
+        cleaner.clean();
+
         recipeRepository.deleteAll();
         userRepository.deleteAll();
         categoryRepository.deleteAll();
 
-        testCategory = new Category("Test Category");
+        testCategory = Category.builder().title("Test Category").build();
         testCategory = categoryRepository.save(testCategory);
 
-        testUser = new User("test", "test", "password-hash", Role.USER);
+        testUser = User.builder()
+                        .name("test")
+                        .login("test")
+                        .passwordHash("password-hash")
+                        .build();
         testUser = userRepository.save(testUser);
     }
 
     @Test
     void getRecipes_shouldReturnAllRecipes() throws Exception {
-        Recipe recipe1 = new Recipe("recipe-test-1", "recipe-instructions-1", testCategory, testUser, 1, "recipe-notes-1");
-        Recipe recipe2 = new Recipe("recipe-test-2", "recipe-instructions-2", testCategory, testUser, 2, "recipe-notes-2");
+        Recipe recipe1 = Recipe.builder()
+                            .title("recipe-test-1")
+                            .instructions("recipe-instructions-1")
+                            .category(testCategory)
+                            .user(testUser)
+                            .build();
+        Recipe recipe2 = Recipe.builder()
+                            .title("recipe-test-2")
+                            .instructions("recipe-instructions-2")
+                            .category(testCategory)
+                            .user(testUser)
+                            .build();
         recipe1 = recipeRepository.save(recipe1);
         recipe2 = recipeRepository.save(recipe2);
 
@@ -77,7 +99,12 @@ public class RecipeControllerIT {
 
     @Test
     void getRecipe_shouldReturnRecipe() throws Exception {
-        Recipe recipe1 = new Recipe("recipe-test-1", "recipe-instructions-1", testCategory, testUser, 1, "recipe-notes-1");
+        Recipe recipe1 = Recipe.builder()
+                .title("recipe-test-1")
+                .instructions("recipe-instructions-1")
+                .category(testCategory)
+                .user(testUser)
+                .build();
         recipe1 = recipeRepository.save(recipe1);
 
         mockMvc.perform(get("/recipes/" + recipe1.getId()))
@@ -99,7 +126,12 @@ public class RecipeControllerIT {
 
     @Test
     void updateRecipe_shouldUpdateRecipe() throws Exception {
-        Recipe recipe = new Recipe("recipe-test-1", "recipe-instructions-1", testCategory, testUser, 1, "recipe-notes-1");
+        Recipe recipe = Recipe.builder()
+                .title("recipe-test")
+                .instructions("recipe-instructions")
+                .category(testCategory)
+                .user(testUser)
+                .build();
         recipe = recipeRepository.save(recipe);
 
         UpdateRecipeRequest updateRecipeRequest = new UpdateRecipeRequest("new-title", null, null, null, null);
@@ -120,10 +152,19 @@ public class RecipeControllerIT {
 
     @Test
     void updateRecipe_shouldFailWhenUserIsNotOwner() throws Exception {
-        User anotherUser = new User("another", "another", "password-hash", Role.USER);
+        User anotherUser = User.builder()
+                            .name("another")
+                            .login("another")
+                            .passwordHash("password-hash")
+                            .build();
         anotherUser = userRepository.save(anotherUser);
 
-        Recipe recipe = new Recipe("recipe-test-1", "recipe-instructions-1", testCategory, testUser, 1, "recipe-notes-1");
+        Recipe recipe = Recipe.builder()
+                .title("recipe-test")
+                .instructions("recipe-instructions")
+                .category(testCategory)
+                .user(testUser)
+                .build();
         recipe = recipeRepository.save(recipe);
 
         UpdateRecipeRequest updateRecipeRequest = new UpdateRecipeRequest("new-title", null, null, null, null);
@@ -139,7 +180,12 @@ public class RecipeControllerIT {
 
     @Test
     void updateRecipe_shouldFailWhenCategoryDoesNotExist() throws Exception {
-        Recipe recipe = new Recipe("recipe-test-1", "recipe-instructions-1", testCategory, testUser, 1, "recipe-notes-1");
+        Recipe recipe = Recipe.builder()
+                .title("recipe-test")
+                .instructions("recipe-instructions")
+                .category(testCategory)
+                .user(testUser)
+                .build();
         recipe = recipeRepository.save(recipe);
 
         UpdateRecipeRequest updateRecipeRequest = new UpdateRecipeRequest(null, null, -1L, null, null);
@@ -161,12 +207,17 @@ public class RecipeControllerIT {
 
     @Test
     void deleteRecipe_shouldDeleteRecipe() throws Exception {
-        Recipe recipe = new Recipe("recipe-test-1", "recipe-instructions-1", testCategory, testUser, 1, "recipe-notes-1");
+        Recipe recipe = Recipe.builder()
+                .title("recipe-test")
+                .instructions("recipe-instructions")
+                .category(testCategory)
+                .user(testUser)
+                .build();
         recipe = recipeRepository.save(recipe);
 
         String token = jwtUtil.generateToken(testUser);
         mockMvc.perform(delete("/recipes/" + recipe.getId())
-                .header("Authorization", "Bearer " + token))
+                    .header("Authorization", "Bearer " + token))
                 .andExpect(status().isNoContent());
 
         Recipe deletedRecipe = recipeRepository.findById(recipe.getId()).orElse(null);
@@ -175,10 +226,19 @@ public class RecipeControllerIT {
 
     @Test
     void deleteRecipe_shouldFailWhenUserInNotOwner() throws Exception {
-        User anotherUser = new User("another", "another", "password-hash", Role.USER);
+        User anotherUser = User.builder()
+                            .name("another")
+                            .login("another")
+                            .passwordHash("password-hash")
+                            .build();
         anotherUser = userRepository.save(anotherUser);
 
-        Recipe recipe = new Recipe("recipe-test-1", "recipe-instructions-1", testCategory, testUser, 1, "recipe-notes-1");
+        Recipe recipe = Recipe.builder()
+                .title("recipe-test")
+                .instructions("recipe-instructions")
+                .category(testCategory)
+                .user(testUser)
+                .build();
         recipe = recipeRepository.save(recipe);
 
         String token = jwtUtil.generateToken(anotherUser);
@@ -235,11 +295,26 @@ public class RecipeControllerIT {
 
     @Test
     void getRecipesByUserId_shouldReturnAllRecipes() throws Exception {
-        User anotherUser = new User("another", "another", "password-hash", Role.USER);
+        User anotherUser = User.builder()
+                            .name("another")
+                            .login("another")
+                            .passwordHash("password-hash")
+                            .build();
         anotherUser = userRepository.save(anotherUser);
 
-        Recipe recipe1 = new Recipe("recipe-test-1", "recipe-instructions-1", testCategory, testUser, 1, "recipe-notes-1");
-        Recipe recipe2 = new Recipe("recipe-test-2", "recipe-instructions-2", testCategory, anotherUser, 1, "recipe-notes-2");
+        Recipe recipe1 = Recipe.builder()
+                .title("recipe-test-1")
+                .instructions("recipe-instructions-1")
+                .category(testCategory)
+                .user(testUser)
+                .build();
+        // Рецепт другого пользователя
+        Recipe recipe2 = Recipe.builder()
+                .title("recipe-test-2")
+                .instructions("recipe-instructions-2")
+                .category(testCategory)
+                .user(anotherUser)
+                .build();
         recipe1 = recipeRepository.save(recipe1);
         recipe2 = recipeRepository.save(recipe2);
 
@@ -257,11 +332,26 @@ public class RecipeControllerIT {
 
     @Test
     void getUserRecipes_shouldReturnAllRecipes() throws Exception {
-        User anotherUser = new User("another", "another", "password-hash", Role.USER);
+        User anotherUser = User.builder()
+                            .name("another")
+                            .login("another")
+                            .passwordHash("password-hash")
+                            .build();
         anotherUser = userRepository.save(anotherUser);
 
-        Recipe recipe1 = new Recipe("recipe-test-1", "recipe-instructions-1", testCategory, testUser, 1, "recipe-notes-1");
-        Recipe recipe2 = new Recipe("recipe-test-2", "recipe-instructions-2", testCategory, anotherUser, 1, "recipe-notes-2");
+        Recipe recipe1 = Recipe.builder()
+                .title("recipe-test-1")
+                .instructions("recipe-instructions-1")
+                .category(testCategory)
+                .user(testUser)
+                .build();
+        // Рецепт другого пользователя
+        Recipe recipe2 = Recipe.builder()
+                .title("recipe-test-2")
+                .instructions("recipe-instructions-2")
+                .category(testCategory)
+                .user(anotherUser)
+                .build();
         recipe1 = recipeRepository.save(recipe1);
         recipe2 = recipeRepository.save(recipe2);
 

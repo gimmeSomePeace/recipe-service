@@ -3,6 +3,9 @@ package com.gimmesomepeace.recipes.model;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;
+import org.hibernate.annotations.*;
+
+import java.time.LocalDateTime;
 
 
 /**
@@ -12,10 +15,14 @@ import lombok.*;
  */
 @Entity
 @Table(name = "app_category")
-@Getter
+@SQLDelete(sql = "UPDATE app_category SET deleted_at = NOW() WHERE id = ?")
+@SQLRestriction("deleted_at IS NULL")
+//@FilterDef(name = "activeFilter", defaultCondition = "deleted_at IS NULL")
+//@Filter(name = "activeFilter")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Builder
+@Getter
 public class Category {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "category_seq")
@@ -26,4 +33,15 @@ public class Category {
     @Column(unique = true, nullable = false)
     @NotBlank
     private String title;
+
+    @CreationTimestamp
+    @Column(nullable = false, updatable = false)
+    private LocalDateTime createdAt;
+
+    @UpdateTimestamp
+    @Column(nullable = false)
+    private LocalDateTime updatedAt;
+
+    @Column(name = "deleted_at")
+    private LocalDateTime deletedAt;
 }

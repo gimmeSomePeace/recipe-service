@@ -28,7 +28,7 @@ public class CategoryInitializer implements CommandLineRunner {
         );
         for (String title: defaultCategories) {
             if (!repository.existsByTitle(title)) {
-                repository.save(new Category(title));
+                repository.save(Category.builder().title(title).build());
             }
         }
     }
