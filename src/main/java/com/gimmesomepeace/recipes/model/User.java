@@ -8,11 +8,11 @@ import lombok.*;
 /**
  * Сущность пользователя.
  *
- * Содержит информацию о пользователе: имя, логин для авторизации и хеш пароля.
- * Также содержит список рецептов, созданных пользователем.
+ * Содержит информацию о пользователе: имя, логин для авторизации, хеш пароля и его роль.
+ *
  */
 @Entity
-@Table(name = "users")
+@Table(name = "app_user")
 @Getter
 @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -42,5 +42,6 @@ public class User {
     /** Роль пользователя */
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private Role role;
+    @Builder.Default
+    private Role role = Role.USER;
 }
