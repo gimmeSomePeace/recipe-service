@@ -12,6 +12,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -41,6 +42,13 @@ public class AuthController {
                     )
             ),
             @ApiResponse(
+                    responseCode = "400",
+                    description = "Данные не прошли валидацию",
+                    content = @Content(
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    )
+            ),
+            @ApiResponse(
                     responseCode = "409",
                     description = "Логин уже занят",
                     content = @Content(
@@ -49,7 +57,7 @@ public class AuthController {
             )
     })
     @PostMapping("/register")
-    ResponseEntity<UserResponse> registration(@RequestBody RegistrationRequest request) {
+    ResponseEntity<UserResponse> registration(@Valid @RequestBody RegistrationRequest request) {
         UserResponse user = service.register(request);
         return ResponseEntity
                 .status(HttpStatus.CREATED) // 201

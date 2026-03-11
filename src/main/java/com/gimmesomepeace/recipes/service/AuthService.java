@@ -19,14 +19,15 @@ import org.springframework.stereotype.Service;
 @Service
 public class AuthService {
 
-    @Autowired
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
+    private final PasswordEncoder encoder;
+    private final JwtUtil jwtUtil;
 
-    @Autowired
-    private PasswordEncoder encoder;
-
-    @Autowired
-    private JwtUtil jwtUtil;
+    public AuthService(UserRepository userRepository, PasswordEncoder encoder, JwtUtil jwtUtil) {
+        this.userRepository = userRepository;
+        this.encoder = encoder;
+        this.jwtUtil = jwtUtil;
+    }
 
     public UserResponse register(RegistrationRequest request) {
         if (userRepository.existsByLogin(request.login())) {
@@ -38,7 +39,7 @@ public class AuthService {
                 encoder.encode(request.password()),
                 Role.USER
         );
-        userRepository.save(user);
+        user = userRepository.save(user);
         return UserResponse.from(user);
     }
 

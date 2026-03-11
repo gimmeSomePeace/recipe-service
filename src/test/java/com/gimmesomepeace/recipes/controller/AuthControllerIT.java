@@ -47,12 +47,27 @@ class AuthControllerIT {
                 "login",
                 "some very difficult password"
         );
-        String json = objectMapper.writeValueAsString(registrationRequest);
+        String content = objectMapper.writeValueAsString(registrationRequest);
 
         mockMvc.perform(post("/auth/register")
                     .contentType(MediaType.APPLICATION_JSON)
-                    .content(json))
+                    .content(content))
                 .andExpect(status().isCreated());
+    }
+
+    @Test
+    void registration_shouldFailWhenHasEmptyFields() throws Exception {
+        RegistrationRequest registrationRequest = new RegistrationRequest(
+                "name",
+                null,
+                "some very difficult password"
+        );
+
+        String content = objectMapper.writeValueAsString(registrationRequest);
+        mockMvc.perform(post("/auth/register")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(content))
+                .andExpect(status().isBadRequest());
     }
 
     @Test
