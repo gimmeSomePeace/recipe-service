@@ -2,22 +2,35 @@ package com.gimmesomepeace.recipes.model;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
+import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
+import org.hibernate.annotations.UpdateTimestamp;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.time.Instant;
 
 
 /**
  * Сущность пользователя.
  *
- * Содержит информацию о пользователе: имя, логин для авторизации и хеш пароля.
- * Также содержит список рецептов, созданных пользователем.
+ * Содержит информацию о пользователе: имя, логин для авторизации, хеш пароля и его роль.
+ *
  */
 @Entity
-@Table(name = "users")
+@Table(name = "app_user")
+@SQLDelete(sql = "UPDATE app_user set deleted_at = NOW() WHERE id = ?")
+@SQLRestriction("deleted_at IS NULL")
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
+@Builder
+@Getter
+// Сеттеры в данном случае полезны только для PATCH
+@Setter
 public class User {
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "users_seq")
+    @SequenceGenerator(name = "users_seq", sequenceName = "users_seq", allocationSize = 1)
     private Long id;
 
     /** Имя пользователя, отображаемое в UI */
@@ -35,52 +48,20 @@ public class User {
     @NotBlank
     private String passwordHash;
 
-    /** Все рецепты, созданные пользователем */
-    @OneToMany(mappedBy = "user")
-    List<Recipe> recipes = new ArrayList<>();
+    /** Роль пользователя */
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    @Builder.Default
+    private Role role = Role.USER;
 
-    private Role role;
+    @CreationTimestamp
+    @Column(nullable = false, updatable = false)
+    private Instant createdAt;
 
-    // ----- Конструкторы -----
-    @SuppressWarnings("unused")
-    protected User() {}
+    @UpdateTimestamp
+    @Column(nullable = false)
+    private Instant updatedAt;
 
-    public User(String name, String login, String passwordHash, Role role) {
-        this.name = name;
-        this.login = login;
-        this.passwordHash = passwordHash;
-        this.role = role;
-    }
-
-    // ----- Геттеры -----
-
-    public Long getId() {
-        return id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public String getLogin() {
-        return login;
-    }
-
-    public String getPasswordHash() {
-        return passwordHash;
-    }
-
-    public Role getRole() {
-        return role;
-    }
-
-    // ----- Сеттеры -----
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public void setLogin(String login) {
-        this.login = login;
-    }
+    @Column(name = "deleted_at")
+    private Instant deletedAt;
 }

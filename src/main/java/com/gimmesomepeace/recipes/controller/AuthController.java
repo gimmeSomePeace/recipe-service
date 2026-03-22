@@ -7,11 +7,13 @@ import com.gimmesomepeace.recipes.dto.response.LoginResponse;
 import com.gimmesomepeace.recipes.dto.response.UserResponse;
 import com.gimmesomepeace.recipes.service.AuthService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -23,7 +25,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @Tag(name = "Авторизация", description = "Операции, связанные с авторизацией пользователя")
 @RestController
-@RequestMapping(value = "/auth", produces =  MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(value = "/auth", produces = MediaType.APPLICATION_JSON_VALUE)
 public class AuthController {
     private final AuthService service;
 
@@ -41,6 +43,13 @@ public class AuthController {
                     )
             ),
             @ApiResponse(
+                    responseCode = "400",
+                    description = "Данные не прошли валидацию",
+                    content = @Content(
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    )
+            ),
+            @ApiResponse(
                     responseCode = "409",
                     description = "Логин уже занят",
                     content = @Content(
@@ -49,7 +58,10 @@ public class AuthController {
             )
     })
     @PostMapping("/register")
-    ResponseEntity<UserResponse> registration(@RequestBody RegistrationRequest request) {
+    ResponseEntity<UserResponse> registration(
+            @Parameter(description = "Данные для регистрации пользователя", required = true)
+            @Valid @RequestBody RegistrationRequest request
+    ) {
         UserResponse user = service.register(request);
         return ResponseEntity
                 .status(HttpStatus.CREATED) // 201
@@ -66,6 +78,13 @@ public class AuthController {
                     )
             ),
             @ApiResponse(
+                    responseCode = "400",
+                    description = "Данные не прошли валидацию",
+                    content = @Content(
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    )
+            ),
+            @ApiResponse(
                     responseCode = "401",
                     description = "Неправильный логин или пароль",
                     content = @Content(
@@ -74,7 +93,10 @@ public class AuthController {
             )
     })
     @PostMapping("/login")
-    LoginResponse login(@RequestBody LoginRequest request) {
+    LoginResponse login(
+            @Parameter(description = "Данные для авторизации пользователя", required = true)
+            @Valid @RequestBody LoginRequest request
+    ) {
         return service.login(request);
     }
 }

@@ -1,11 +1,11 @@
 package com.gimmesomepeace.recipes.controller;
 
 import com.gimmesomepeace.recipes.model.Category;
-import com.gimmesomepeace.recipes.model.Role;
 import com.gimmesomepeace.recipes.model.User;
 import com.gimmesomepeace.recipes.repository.CategoryRepository;
 import com.gimmesomepeace.recipes.repository.UserRepository;
 import com.gimmesomepeace.recipes.security.JwtUtil;
+import com.gimmesomepeace.recipes.testutil.TestDatabaseCleaner;
 import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -35,12 +35,19 @@ public class CategoryControllerIT {
     UserRepository userRepository;
     @Autowired
     JwtUtil jwtUtil;
+    @Autowired
+    TestDatabaseCleaner cleaner;
 
     private String token;
 
     @BeforeEach
     void setUp() {
-        User user = new User("name", "login", "password_hash", Role.USER);
+        cleaner.clean();
+        User user = User.builder()
+                        .name("name")
+                        .login("login")
+                        .passwordHash("password")
+                        .build();
         user = userRepository.save(user);
 
         token = jwtUtil.generateToken(user);
@@ -61,17 +68,19 @@ public class CategoryControllerIT {
 
     @Test
     void getCategories_shouldReturnAllCategories() throws Exception {
-        repository.save(new Category("Тестовая категория"));
+        Category category = Category.builder().title("Тестовая категория").build();
+        repository.save(category);
 
         mockMvc.perform(get("/categories")
                         .header("Authorization", "Bearer " + token))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath(("$[*].title")).value(hasItem("Тестовая категория")));
+                .andExpect(jsonPath("$.content[*].title", hasItem("Тестовая категория")));
     }
 
     @Test
     void getById_shouldReturnCategory() throws Exception {
-        Category category = repository.save(new Category("Еда"));
+        Category category = Category.builder().title("Тестовая категория").build();
+        category = repository.save(category);
 
         mockMvc.perform(get("/categories/{id}", category.getId())
                         .header("Authorization", "Bearer " + token))

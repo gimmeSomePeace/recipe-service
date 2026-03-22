@@ -2,22 +2,30 @@ package com.gimmesomepeace.recipes.model;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
+import lombok.*;
+import org.hibernate.annotations.*;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.time.Instant;
+import java.time.LocalDateTime;
 
 
 /**
  * Сущность категории рецепта.
  *
  * Содержит информацию о названии категории.
- * Также содержит список рецептов, относящихся к рассматриваемой категории.
  */
 @Entity
-@Table(name = "categories")
+@Table(name = "app_category")
+@SQLDelete(sql = "UPDATE app_category SET deleted_at = NOW() WHERE id = ?")
+@SQLRestriction("deleted_at IS NULL")
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
+@Builder
+@Getter
 public class Category {
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "category_seq")
+    @SequenceGenerator(name = "category_seq", sequenceName = "category_seq", allocationSize = 1)
     private Long id;
 
     /** Название категории */
@@ -25,24 +33,14 @@ public class Category {
     @NotBlank
     private String title;
 
-    /** Список рецептов, относящихся к данной категории */
-    @OneToMany(mappedBy = "category")
-    private List<Recipe> recipes = new ArrayList<>();
+    @CreationTimestamp
+    @Column(nullable = false, updatable = false)
+    private Instant createdAt;
 
-    // ----- Конструкторы -----
-    @SuppressWarnings("unused")
-    protected Category() {}
+    @UpdateTimestamp
+    @Column(nullable = false)
+    private Instant updatedAt;
 
-    public Category(String title) {
-        this.title = title;
-    }
-
-    // ----- геттеры -----
-    public Long getId() {
-        return id;
-    }
-
-    public String getTitle() {
-        return title;
-    }
+    @Column(name = "deleted_at")
+    private Instant deletedAt;
 }

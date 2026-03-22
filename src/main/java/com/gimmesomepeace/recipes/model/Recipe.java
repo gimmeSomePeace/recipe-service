@@ -5,6 +5,11 @@ import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import lombok.*;
+import org.hibernate.annotations.*;
+
+import java.time.Instant;
+
 
 /**
  * Сущность рецепта.
@@ -13,10 +18,19 @@ import jakarta.validation.constraints.NotNull;
  * Содержит дополнительные данные, такие как описание, инструкции, оценка и заметки.
  */
 @Entity
-@Table(name = "recipes")
+@Table(name = "app_recipe")
+@SQLDelete(sql = "UPDATE app_recipe SET deleted_at = NOW() WHERE id = ?")
+@SQLRestriction("deleted_at IS NULL")
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
+@Builder
+@Getter
+// Сеттеры в данном случае полезны только для PATCH
+@Setter
 public class Recipe {
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "recipe_seq")
+    @SequenceGenerator(name = "recipe_seq", sequenceName = "recipe_seq",  allocationSize = 1)
     private Long id;
 
     /** Название блюда */
@@ -24,6 +38,7 @@ public class Recipe {
     @NotBlank
     private String title;
 
+    // TODO: в будущем поменять на адекватную систему с шагами, чем сырой текст
     /** Инструкция по приготовлению блюда */
     @Lob
     @Column(nullable = false)
@@ -45,77 +60,21 @@ public class Recipe {
     /** Рейтинг, который выставил владелец рецепта */
     @Min(0)
     @Max(10)
-    private Integer rating;
+    @Builder.Default
+    private Integer rating = 0;
 
     /** Заметки, оставленные владельцем рецепта */
     @Lob
     private String notes;
 
-    // ----- Конструкторы -----
-    @SuppressWarnings("unused")
-    public Recipe() {}
+    @CreationTimestamp
+    @Column(nullable = false, updatable = false)
+    private Instant createdAt;
 
-    public Recipe(String title, String instructions, Category category, User user, Integer rating, String notes) {
-        this.title = title;
-        this.instructions = instructions;
-        this.category = category;
-        this.user = user;
-        this.rating = rating;
-        this.notes = notes;
-    }
+    @UpdateTimestamp
+    @Column(nullable = false)
+    private Instant updatedAt;
 
-    // ----- Геттеры ------
-    public Long getId() {
-        return id;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public String getInstructions() {
-        return instructions;
-    }
-
-    public Category getCategory() {
-        return category;
-    }
-
-    public User getUser() {
-        return user;
-    }
-
-    public Integer getRating() {
-        return rating;
-    }
-
-    public String getNotes() {
-        return notes;
-    }
-
-    // ------ Сеттеры ------
-    public void setTitle(String title) {
-        if (title == null || title.isBlank())
-            throw new IllegalArgumentException("Title cannot be null or blank");
-        this.title = title;
-    }
-
-    public void setInstructions(String instructions) {
-        if (instructions == null || instructions.isBlank())
-            throw new IllegalArgumentException("instructions cannot be null or blank");
-        this.instructions = instructions;
-    }
-
-    public void setCategory(Category category) {
-        if (category == null) throw new IllegalArgumentException("category cannot be null");
-        this.category = category;
-    }
-
-    public void setRating(Integer rating) {
-        this.rating = rating;
-    }
-
-    public void setNotes(String notes) {
-        this.notes = notes;
-    }
+    @Column(name = "deleted_at")
+    private Instant deletedAt;
 }
