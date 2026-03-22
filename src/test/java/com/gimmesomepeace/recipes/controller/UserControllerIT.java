@@ -109,12 +109,12 @@ public class UserControllerIT {
 
         User newUser = User.builder()
                         .name("new-name")
-                        .login("new-login")
+                        .login("new_login")
                         .passwordHash(passwordEncoder.encode("new-password"))
                         .build();
         userRepository.save(newUser);
 
-        UpdateUserRequest updateUserRequest = new UpdateUserRequest("new-login", null);
+        UpdateUserRequest updateUserRequest = new UpdateUserRequest("new_login", null);
         String json =  objectMapper.writeValueAsString(updateUserRequest);
         mockMvc.perform(patch("/users/me")
                     .header("Authorization", "Bearer " + token)

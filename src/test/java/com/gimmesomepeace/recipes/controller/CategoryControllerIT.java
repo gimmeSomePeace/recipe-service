@@ -74,7 +74,7 @@ public class CategoryControllerIT {
         mockMvc.perform(get("/categories")
                         .header("Authorization", "Bearer " + token))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath(("$[*].title")).value(hasItem("Тестовая категория")));
+                .andExpect(jsonPath("$.content[*].title", hasItem("Тестовая категория")));
     }
 
     @Test

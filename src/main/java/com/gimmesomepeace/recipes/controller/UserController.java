@@ -2,18 +2,21 @@ package com.gimmesomepeace.recipes.controller;
 
 import com.gimmesomepeace.recipes.dto.request.UpdateUserRequest;
 import com.gimmesomepeace.recipes.dto.response.ErrorResponse;
+import com.gimmesomepeace.recipes.dto.response.PageResponse;
 import com.gimmesomepeace.recipes.dto.response.RecipeShortResponse;
 import com.gimmesomepeace.recipes.dto.response.UserResponse;
 import com.gimmesomepeace.recipes.security.UserPrincipal;
 import com.gimmesomepeace.recipes.service.RecipeService;
 import com.gimmesomepeace.recipes.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.springframework.data.domain.Page;
+import jakarta.validation.Valid;
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
@@ -78,6 +81,13 @@ public class UserController {
                     )
             ),
             @ApiResponse(
+                    responseCode = "400",
+                    description = "Данные не прошли валидацию",
+                    content = @Content(
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    )
+            ),
+            @ApiResponse(
                     responseCode = "403",
                     description = "Требуется аутентификация",
                     content = @Content(
@@ -101,7 +111,8 @@ public class UserController {
     })
     @PatchMapping("/me")
     UserResponse updateUserInfo(
-            @RequestBody UpdateUserRequest request,
+            @Parameter(description = "Новые данные о пользователе", required = true)
+            @Valid @RequestBody UpdateUserRequest request,
             @AuthenticationPrincipal UserPrincipal principal
     ) {
         return service.updateUser(principal.getId(), request);
@@ -143,8 +154,7 @@ public class UserController {
                     responseCode = "200",
                     description = "Рецепты получены",
                     content = @Content(
-                            // TODO: Поменять на кастомный Page<RecipeShortResponse>
-                            schema = @Schema(implementation = RecipeShortResponse.class)
+                            schema = @Schema(implementation = PageResponse.class)
                     )
             ),
             @ApiResponse(
@@ -156,9 +166,10 @@ public class UserController {
             )
     })
     @GetMapping("/me/recipes")
-    Page<RecipeShortResponse> getUserRecipes(
-            @AuthenticationPrincipal UserPrincipal principal,
-            @PageableDefault(size = 10, sort = "title", direction = Sort.Direction.ASC) Pageable pageable
+    PageResponse<RecipeShortResponse> getUserRecipes(
+            @ParameterObject
+            @PageableDefault(sort = "title", direction = Sort.Direction.ASC) Pageable pageable,
+            @AuthenticationPrincipal UserPrincipal principal
     ) {
         return recipeService.getRecipesByUserId(
                 principal.getId(),
@@ -175,15 +186,22 @@ public class UserController {
                     responseCode = "200",
                     description = "Получены рецепты некоторого пользователя",
                     content = @Content(
-                            // TODO: знаю
-                            schema = @Schema(implementation = RecipeShortResponse.class)
+                            schema = @Schema(implementation = PageResponse.class)
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "Пользователь не найден",
+                    content = @Content(
+                            schema = @Schema(implementation = ErrorResponse.class)
                     )
             )
     })
     @GetMapping("/{id}/recipes")
-    Page<RecipeShortResponse> getRecipesByUserId(
-            @PathVariable long id,
-            @PageableDefault(size = 10, sort = "title", direction = Sort.Direction.ASC) Pageable pageable
+    PageResponse<RecipeShortResponse> getRecipesByUserId(
+            @Parameter(description = "Идентификатор пользователя", required = true) @PathVariable long id,
+            @ParameterObject
+            @PageableDefault(sort = "title", direction = Sort.Direction.ASC) Pageable pageable
     ) {
         return recipeService.getRecipesByUserId(
                 id,

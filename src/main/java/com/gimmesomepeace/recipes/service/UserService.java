@@ -8,9 +8,11 @@ import com.gimmesomepeace.recipes.model.User;
 import com.gimmesomepeace.recipes.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 
 @Service
+@Transactional(readOnly = true)
 public class UserService {
     private final UserRepository userRepository;
 
@@ -23,24 +25,23 @@ public class UserService {
         return UserResponse.from(user);
     }
 
+    @Transactional
     public UserResponse updateUser(Long id, UpdateUserRequest request) {
         User user = userRepository.findById(id).orElseThrow(() -> new UserNotFoundException(id));
 
-        System.out.println("REQUEST: " + request.toString());
-        System.out.println("LOGIN: " + user.getLogin());
-        if (request.login() != null && !request.login().isBlank() && !user.getLogin().equals(request.login())) {
+        if (request.login() != null && !user.getLogin().equals(request.login())) {
             if (userRepository.existsByLogin(request.login())) {
                 throw new LoginAlreadyExistsException(request.login());
             }
             user.setLogin(request.login());
         }
-        if (request.name() != null && !request.name().isBlank()) {
-            user.setName(request.name());
-        }
+        if (request.name() != null) user.setName(request.name());
+
         userRepository.save(user);
         return UserResponse.from(user);
     }
 
+    @Transactional
     public void deleteUser(Long id) {
         User user = userRepository.findById(id).orElseThrow(() -> new UserNotFoundException(id));
         userRepository.delete(user);

@@ -183,7 +183,7 @@ public class RecipeControllerIT {
                 .build();
         recipe = recipeRepository.save(recipe);
 
-        UpdateRecipeRequest updateRecipeRequest = new UpdateRecipeRequest(null, null, -1L, null, null);
+        UpdateRecipeRequest updateRecipeRequest = new UpdateRecipeRequest(null, null, 999L, null, null);
 
         String token = jwtUtil.generateToken(testUser);
         String content = objectMapper.writeValueAsString(updateRecipeRequest);

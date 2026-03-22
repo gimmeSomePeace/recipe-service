@@ -20,7 +20,7 @@ public record CategoryShortResponse(
         @Schema(description = "Дата последнего обновления категории", example = "2026-03-22T12:34:56Z")
         Instant updatedAt
 ) {
-    static CategoryShortResponse from(Category category) {
+    public static CategoryShortResponse from(Category category) {
         return new CategoryShortResponse(
                 category.getId(),
                 category.getTitle(),
