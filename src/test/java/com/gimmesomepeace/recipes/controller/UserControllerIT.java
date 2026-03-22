@@ -80,7 +80,7 @@ public class UserControllerIT {
 
     @Test
     void updateUserInfo_shouldUpdateUserData() throws Exception {
-        UpdateUserRequest updateUserRequest = new UpdateUserRequest("new-login", "new-name");
+        UpdateUserRequest updateUserRequest = new UpdateUserRequest("new_login", "new-name");
         String content =  objectMapper.writeValueAsString(updateUserRequest);
 
         mockMvc.perform(patch("/users/me")
@@ -90,7 +90,7 @@ public class UserControllerIT {
                 )
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.name").value("new-name"))
-                .andExpect(jsonPath("$.login").value("new-login"));
+                .andExpect(jsonPath("$.login").value("new_login"));
 
         User updatedUser = userRepository.findById(testUser.getId()).orElse(null);
         assertNotNull(updatedUser);
