@@ -7,6 +7,7 @@ import com.gimmesomepeace.recipes.dto.response.RecipeShortResponse;
 import com.gimmesomepeace.recipes.dto.response.UserShortResponse;
 import com.gimmesomepeace.recipes.security.UserPrincipal;
 import com.gimmesomepeace.recipes.service.RecipeService;
+import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -60,7 +61,7 @@ public class RecipeController {
     @PostMapping
     public ResponseEntity<RecipeResponse> createRecipe(
             @AuthenticationPrincipal UserPrincipal user,
-            @RequestBody CreateRecipeRequest createRecipeRequest
+            @Valid @RequestBody CreateRecipeRequest createRecipeRequest
     ) {
         RecipeResponse recipe = recipeService.create(user.getId(), createRecipeRequest);
         return ResponseEntity.status(HttpStatus.CREATED).body(recipe);
