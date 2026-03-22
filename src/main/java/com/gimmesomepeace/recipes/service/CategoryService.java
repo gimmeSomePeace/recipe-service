@@ -1,10 +1,9 @@
 package com.gimmesomepeace.recipes.service;
 
 
-import com.gimmesomepeace.recipes.dto.CategoryDto;
+import com.gimmesomepeace.recipes.dto.response.CategoryResponse;
 import com.gimmesomepeace.recipes.exception.ResourceNotFoundException;
 import com.gimmesomepeace.recipes.exception.ResourceType;
-import com.gimmesomepeace.recipes.mapper.CategoryMapper;
 import com.gimmesomepeace.recipes.repository.CategoryRepository;
 import org.springframework.stereotype.Service;
 
@@ -19,16 +18,16 @@ public class CategoryService {
         this.repository = repository;
     }
 
-    public List<CategoryDto> getAll() {
+    public List<CategoryResponse> getAll() {
         return repository.findAll()
                 .stream()
-                .map(CategoryMapper::toDto)
+                .map(CategoryResponse::from)
                 .toList();
     }
 
-    public CategoryDto getById(Long id) {
+    public CategoryResponse getById(Long id) {
         return repository.findById(id)
-                .map(CategoryMapper::toDto)
+                .map(CategoryResponse::from)
                 .orElseThrow(() ->
                         new ResourceNotFoundException(ResourceType.CATEGORY, id)
                 );

@@ -28,7 +28,7 @@ public class GlobalExceptionHandler {
                 404,
                 detail,
                 request.getRequestURI(),
-                Instant.now().toString()
+                Instant.now()
         );
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
     }
@@ -44,7 +44,7 @@ public class GlobalExceptionHandler {
                 409,
                 "Пользователь с логином " + exc.getLogin() + " уже существует",
                 request.getRequestURI(),
-                Instant.now().toString()
+                Instant.now()
         );
         return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
     }
@@ -60,7 +60,7 @@ public class GlobalExceptionHandler {
                 404,
                 "Пользователь с логином " + exc.getLogin() + " не найден",
                 request.getRequestURI(),
-                Instant.now().toString()
+                Instant.now()
         );
         return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
     }
@@ -78,7 +78,7 @@ public class GlobalExceptionHandler {
                 401,
                 detail,
                 request.getRequestURI(),
-                Instant.now().toString()
+                Instant.now()
         );
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
     }
@@ -95,7 +95,7 @@ public class GlobalExceptionHandler {
                 403,
                 detail,
                 request.getRequestURI(),
-                Instant.now().toString()
+                Instant.now()
         );
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
     }
@@ -113,7 +113,7 @@ public class GlobalExceptionHandler {
                 400,
                 detail,
                 request.getRequestURI(),
-                Instant.now().toString()
+                Instant.now()
         );
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
     }

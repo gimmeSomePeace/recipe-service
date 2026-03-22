@@ -1,7 +1,7 @@
 package com.gimmesomepeace.recipes.controller;
 
 
-import com.gimmesomepeace.recipes.dto.CategoryDto;
+import com.gimmesomepeace.recipes.dto.response.CategoryResponse;
 import com.gimmesomepeace.recipes.dto.response.ErrorResponse;
 import com.gimmesomepeace.recipes.service.CategoryService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -36,7 +36,7 @@ public class CategoryController {
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Категории получены",
                 content = @Content(
-                        array = @ArraySchema(schema = @Schema(implementation = CategoryDto.class))
+                        array = @ArraySchema(schema = @Schema(implementation = CategoryResponse.class))
                 )
             ),
             @ApiResponse(
@@ -48,7 +48,7 @@ public class CategoryController {
             )
     })
     @GetMapping
-    public List<CategoryDto> getCategories() {
+    public List<CategoryResponse> getCategories() {
         return service.getAll();
     }
 
@@ -61,7 +61,7 @@ public class CategoryController {
                     responseCode = "200",
                     description = "Категория найдена",
                     content = @Content(
-                            schema = @Schema(implementation = CategoryDto.class)
+                            schema = @Schema(implementation = CategoryResponse.class)
                     )
             ),
             @ApiResponse(
@@ -90,7 +90,7 @@ public class CategoryController {
             )
     })
     @GetMapping("/{id}")
-    public CategoryDto getById(
+    public CategoryResponse getById(
             @Parameter(description = "Id категории", example = "5")
             @PathVariable Long id) {
         return service.getById(id);
