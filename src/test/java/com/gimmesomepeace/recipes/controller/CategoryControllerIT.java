@@ -1,7 +1,6 @@
 package com.gimmesomepeace.recipes.controller;
 
 import com.gimmesomepeace.recipes.model.Category;
-import com.gimmesomepeace.recipes.model.Role;
 import com.gimmesomepeace.recipes.model.User;
 import com.gimmesomepeace.recipes.repository.CategoryRepository;
 import com.gimmesomepeace.recipes.repository.UserRepository;

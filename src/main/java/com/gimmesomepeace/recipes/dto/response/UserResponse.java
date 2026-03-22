@@ -1,5 +1,6 @@
 package com.gimmesomepeace.recipes.dto.response;
 
+import com.gimmesomepeace.recipes.model.Role;
 import com.gimmesomepeace.recipes.model.User;
 import io.swagger.v3.oas.annotations.media.Schema;
 
@@ -13,7 +14,10 @@ public record UserResponse (
         String login,
 
         @Schema(description = "Имя пользователя, отображаемое в UI", example = "Сергей")
-        String name
+        String name,
+
+        @Schema(description = "Роль")
+        Role role
 ) {
     public static UserResponse from(User user) {
         return new UserResponse(

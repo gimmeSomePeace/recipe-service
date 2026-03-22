@@ -5,6 +5,7 @@ import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 import org.hibernate.annotations.*;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
 
 
@@ -17,8 +18,6 @@ import java.time.LocalDateTime;
 @Table(name = "app_category")
 @SQLDelete(sql = "UPDATE app_category SET deleted_at = NOW() WHERE id = ?")
 @SQLRestriction("deleted_at IS NULL")
-//@FilterDef(name = "activeFilter", defaultCondition = "deleted_at IS NULL")
-//@Filter(name = "activeFilter")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Builder
@@ -36,12 +35,12 @@ public class Category {
 
     @CreationTimestamp
     @Column(nullable = false, updatable = false)
-    private LocalDateTime createdAt;
+    private Instant createdAt;
 
     @UpdateTimestamp
     @Column(nullable = false)
-    private LocalDateTime updatedAt;
+    private Instant updatedAt;
 
     @Column(name = "deleted_at")
-    private LocalDateTime deletedAt;
+    private Instant deletedAt;
 }

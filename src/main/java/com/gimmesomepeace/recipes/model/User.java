@@ -3,12 +3,12 @@ package com.gimmesomepeace.recipes.model;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;
-import org.hibernate.annotations.Filter;
-import org.hibernate.annotations.FilterDef;
+import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
+import org.hibernate.annotations.UpdateTimestamp;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 
 
 /**
@@ -21,8 +21,6 @@ import java.time.LocalDateTime;
 @Table(name = "app_user")
 @SQLDelete(sql = "UPDATE app_user set deleted_at = NOW() WHERE id = ?")
 @SQLRestriction("deleted_at IS NULL")
-//@FilterDef(name = "activeFilter", defaultCondition = "deleted_at IS NULL")
-//@Filter(name = "activeFilter")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Builder
@@ -56,6 +54,14 @@ public class User {
     @Builder.Default
     private Role role = Role.USER;
 
+    @CreationTimestamp
+    @Column(nullable = false, updatable = false)
+    private Instant createdAt;
+
+    @UpdateTimestamp
+    @Column(nullable = false)
+    private Instant updatedAt;
+
     @Column(name = "deleted_at")
-    private LocalDateTime deletedAt;
+    private Instant deletedAt;
 }

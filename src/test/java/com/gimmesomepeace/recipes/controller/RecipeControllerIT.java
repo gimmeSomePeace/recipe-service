@@ -5,15 +5,12 @@ import com.gimmesomepeace.recipes.dto.request.CreateRecipeRequest;
 import com.gimmesomepeace.recipes.dto.request.UpdateRecipeRequest;
 import com.gimmesomepeace.recipes.model.Category;
 import com.gimmesomepeace.recipes.model.Recipe;
-import com.gimmesomepeace.recipes.model.Role;
 import com.gimmesomepeace.recipes.model.User;
 import com.gimmesomepeace.recipes.repository.CategoryRepository;
 import com.gimmesomepeace.recipes.repository.RecipeRepository;
 import com.gimmesomepeace.recipes.repository.UserRepository;
 import com.gimmesomepeace.recipes.security.JwtUtil;
 import com.gimmesomepeace.recipes.testutil.TestDatabaseCleaner;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,8 +45,6 @@ public class RecipeControllerIT {
     ObjectMapper objectMapper;
     @Autowired
     TestDatabaseCleaner cleaner;
-    @Autowired
-    EntityManager em;
 
     User testUser;
     Category testCategory;
